@@ -126,7 +126,7 @@ function App() {
                   <div className="content-sec">
                     {
                       country.list.map((item:any, index:number) => (
-                        <div className="user-item">
+                        <div className="user-item" key={index}>
                           <img className="avatar" src={item.picture.medium} alt="" />
                           <div className="info-item">
                           <span className="info-key">Name: </span>{item.name.first} {item.name.last}
