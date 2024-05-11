@@ -2,6 +2,58 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+interface countryListObj {
+  id?: number,
+  country: string;
+  list: Object[];
+}
+interface countryItem {
+  gender: string;
+  name: {
+    title: string;
+    first: string;
+    last: string;
+  };
+  registered: {
+    date: string;
+    age: number;
+    timestamp: number;
+    daytime: string;
+  };
+  location: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    postcode: number;
+  };
+  phone: string;
+  email: string;
+  picture: {
+    large: string;
+    medium: string;
+    thumbnail: string;
+  };
+  nat: string;
+  login: {
+    uuid: string;
+    username: string;
+    password: string;
+    salt: string;
+    md5: string;
+    sha1: string;
+    sha256: string;
+  };
+  dob: {
+    date: string;
+    age: number;
+  };
+  id: {
+    name: string;
+    value: string;
+  };
+}
+
 function timestampToDateTime(timestamp:number) {
   const date = new Date(timestamp);
   const year = date.getFullYear();
@@ -16,17 +68,16 @@ function timestampToDateTime(timestamp:number) {
 
 function App() {
 
-  const [countryList, setcountryList] = useState([])
+  const [countryList, setcountryList] = useState<countryListObj[]>([])
   const [currentIndex, setcurrentIndex] = useState(0)
   
   useEffect(() => {
     axios.get('https://randomuser.me/api/?results=100')
     .then(res => {
       const { results } = res.data
-      console.log(results)
       
-      let countryList:any[] = []
-      results.forEach((item:any) => {
+      let countryList:countryListObj[] = []
+      results.forEach((item:countryItem) => {
         var date = new Date(item.registered.date);
         const timestamp = Math.floor(date.getTime());
         item.registered.timestamp = timestamp;
@@ -38,13 +89,13 @@ function App() {
           })
         } else {
           const countryItem = countryList.find(itm => itm.country === item.location.country)
-          countryItem.list.push(item)
+          countryItem?.list.push(item)
         }
       })
       countryList.sort(function(a, b) {
         return b.list.length - a.list.length;
       });
-      countryList.forEach((item:any, index:number) => {
+      countryList.forEach((item:countryListObj, index:number) => {
         item.id = index + 1
         item.list.sort(function(a:any, b:any) {
           return b.registered.timestamp - a.registered.timestamp;
@@ -57,8 +108,8 @@ function App() {
   return (
     <>
       {
-        countryList.map((country:any, index) => (
-          <div className="container">
+        countryList.map((country:countryListObj, index) => (
+          <div className="container" key={index}>
             <div className="country-item">
               <div className="title-sec">
                 <div>Country: {country.country}</div>
