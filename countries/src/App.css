@@ -27,6 +27,19 @@
 .content-sec {
   font-size: 16px;
 }
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 20px;
+}
+.col {
+  flex: 1;
+}
+.clo1 {
+  width: 100px;
+}
 .user-count {
   font-size: 16px;
   margin-left: 20px;
@@ -37,19 +50,16 @@
   margin-bottom: 10rpx;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 .user-item:last-child {
   border-bottom: none;
 }
 .avatar {
-  width: 50px;
+  width: 50px !important;
   height: 50px;
   border-radius: 50%;
-  margin-right: 20px;
 }
 .info-item {
   margin: 0 20px;
-}
-.info-key {
-  font-weight: bold;
 }

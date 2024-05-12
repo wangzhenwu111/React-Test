@@ -3,11 +3,12 @@ import axios from "axios";
 import "./App.css";
 
 interface countryListObj {
-  id?: number,
+  id: number,
   country: string;
   list: Object[];
 }
 interface countryItem {
+  isShow: boolean;
   gender: string;
   name: {
     title: string;
@@ -78,12 +79,14 @@ function App() {
       
       let countryList:countryListObj[] = []
       results.forEach((item:countryItem) => {
+        item.isShow = true
         var date = new Date(item.registered.date);
         const timestamp = Math.floor(date.getTime());
         item.registered.timestamp = timestamp;
         item.registered.daytime = timestampToDateTime(timestamp)
         if (!countryList.find(itm => itm.country === item.location.country)) {
           countryList.push({
+            id: 0,
             country: item.location.country,
             list: [item]
           })
@@ -105,6 +108,29 @@ function App() {
     })
   }, [])
 
+  const handleSelGender = (e:any, id:number) => {
+    const { value } = e.target
+    console.log(value, id)
+    if (value === 'all') {
+      countryList[id - 1].list.forEach((item:countryItem) => {
+        item.isShow = true
+      })
+    } else {
+      countryList[id - 1].list.forEach((item:countryItem) => {
+        if (item.gender === value) {
+          item.isShow = true
+        } else {
+          item.isShow= false
+        }
+      })
+    }
+    setcountryList([...countryList])
+  }
+  const handleExpand = (index:number) => {
+    handleSelGender({target: {value: 'all'}}, index + 1)
+    setcurrentIndex(index + 1)
+  }
+
   return (
     <>
       {
@@ -117,34 +143,45 @@ function App() {
                 {
                   currentIndex === index + 1 ? 
                   <div className="expand-tip" onClick={() => setcurrentIndex(0)}>[collapse]</div> :
-                  <div className="expand-tip" onClick={() => setcurrentIndex(index + 1)}>[expand]</div>
+                  <div className="expand-tip" onClick={() => handleExpand(index)}>[expand]</div>
                 }
               </div>
               {
                 country.id === currentIndex &&
                 (
                   <div className="content-sec">
+                    <div className="table-header">
+                      <div className="col">Avatar</div>
+                      <div className="col">Name</div>
+                      <div className="col">
+                        Gender
+                        <select className="sel-gender" onChange={(e) => {handleSelGender(e, country.id)}}>
+                          <option value="all">All</option>
+                          <option value="male">M</option>
+                          <option value="female">F</option>
+                        </select>
+                      </div>
+                      <div className="col">City</div>
+                      <div className="col">State</div>
+                      <div className="col">Registered</div>
+                    </div>
                     {
-                      country.list.map((item:any, index:number) => (
-                        <div className="user-item" key={index}>
-                          <img className="avatar" src={item.picture.medium} alt="" />
-                          <div className="info-item">
-                          <span className="info-key">Name: </span>{item.name.first} {item.name.last}
-                          </div>
-                          <div className="info-item">
-                          <span className="info-key">Gender: </span>{item.gender}
-                          </div>
-                          <div className="info-item">
-                            <span className="info-key">City: </span>{item.location.city}
-                          </div>
-                          <div className="info-item">
-                            <span className="info-key">State: </span>{item.location.state}
-                          </div>
-                          <div className="info-item">
-                            <span className="info-key">Date Registered: </span>{item.registered.daytime}
-                          </div>
-                        </div>
-                      ))
+                      country.list.map((item:any, index:number) => {
+                        if (item.isShow) {
+                          return (
+                            <div className="user-item" key={index}>
+                              <div className="col">
+                              <img className="avatar" src={item.picture.medium} alt="" />
+                              </div>
+                              <div className="col">{item.name.first} {item.name.last}</div>
+                              <div className="col">{item.gender}</div>
+                              <div className="col">{item.location.city}</div>
+                              <div className="col">{item.location.state}</div>
+                              <div className="col">{item.registered.daytime}</div>
+                            </div>
+                          )
+                        }
+                      })
                     }
                   </div>
                 )
